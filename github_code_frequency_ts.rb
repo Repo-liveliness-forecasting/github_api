@@ -5,6 +5,7 @@ NEWLINE = "\n".freeze
 SEPERATOR = ", ".freeze
 USAGE = 'USAGE: ruby github_code_frequency_ts.rb <OWNER> <REPO>'.freeze
 GITHUB_REPO_ENPOINT = 'https://api.github.com/repos'.freeze
+OUTPUT_FOLDER = './output/'.freeze
 
 def exit_with_error(msg)
   puts "#{msg}\n"
@@ -47,7 +48,7 @@ end
 
 def format_array(array)
   puts 'Processing ...'
-  res = array.map { |row| [Date.strptime(row[0].to_s, '%s').strftime('%Y %W'), row[1], row[2]]}
+  res = array.map { |row| [Date.strptime(row[0].to_s, '%s').strftime('%Y-%m-%d'), row[1], row[2]]}
   res.unshift ['Year Week', 'adding', 'removing']
   res
 end
@@ -61,4 +62,4 @@ code_frequency_responce = load_api_or_die(owner, repo)
 code_frequency_array = format_array(code_frequency_responce)
 code_frequency_csv = array_to_csv(code_frequency_array)
 
-File.write(filename, code_frequency_csv)
+File.write(OUTPUT_FOLDER + filename, code_frequency_csv)
