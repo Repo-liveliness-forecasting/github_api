@@ -26,4 +26,4 @@ github_api = Github::API.new(
 
 repository = Github::Repository.new(github_api, owner, repo)
 
-File.write(OUTPUT_FOLDER + filename, repository.commits_to_csv)
+File.write(OUTPUT_FOLDER + filename, repository.issues_to_csv)

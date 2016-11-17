@@ -30,10 +30,15 @@ module  Github
 
     def load_repo_commits_first(owner, repo)
       endpoint = [GITHUB_API_URL, 'repos', owner, repo, 'commits'].join('/')
-      load_repo_commits_url(endpoint)
+      load_repo_next_url(endpoint)
     end
 
-    def load_repo_commits_url(url)
+    def load_repo_issues_first(owner, repo, state: 'all')
+      endpoint = [GITHUB_API_URL, 'repos', owner, repo, 'issues'].join('/')
+      load_repo_next_url(endpoint + '?state=' + state)
+    end
+
+    def load_repo_next_url(url)
       response = github_api_wait_cache(url)
       [parse_link(response.headers.get('Link').first), response.parse()]
     end
@@ -54,16 +59,35 @@ module  Github
       commits.map { |commit| [commit['commit']['author']['date'], commit['sha']]}
     end
 
+    def parse_issues(issues)
+      issues.map do |issue|
+        is_pull = issue['pull_request'] ? true : false
+        [issue['created_at'], issue['id'], is_pull]
+      end
+    end
+
     def load_repo_commits(owner, repo)
       commits = []
       link, commits_responce = load_repo_commits_first(owner, repo)
       commits += parse_commits(commits_responce)
       while link['next']
           puts link['next'][:page].to_s + '/' + link['last'][:page].to_s
-          link, commits_responce = load_repo_commits_url(link['next'][:url])
+          link, commits_responce = load_repo_next_url(link['next'][:url])
           commits += parse_commits(commits_responce)
       end
       commits
+    end
+
+    def load_repo_issues(owner, repo, state:)
+      issues = []
+      link, issues_responce = load_repo_issues_first(owner, repo, state: state)
+      issues += parse_issues(issues_responce)
+      while link['next']
+          puts link['next'][:page].to_s + '/' + link['last'][:page].to_s
+          link, issues_responce = load_repo_next_url(link['next'][:url])
+          issues += parse_issues(issues_responce)
+      end
+      issues
     end
   end
 end

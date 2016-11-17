@@ -20,8 +20,19 @@ module  Github
       @commits = @github_api.load_repo_commits(@owner, @name)
     end
 
-    def to_csv
-      headers = "datetime, commit_sha \n"
+    def issues(state: "all")
+      return @issues if @issues
+      @issues = @github_api.load_repo_issues(@owner, @name, state: state)
+    end
+
+    def issues_to_csv
+      headers = "datetime, id, is_pull_request\n"
+      data = issues.map { |row| row.join(SEPERATOR) + NEWLINE }.join
+      headers + data
+    end
+
+    def commits_to_csv
+      headers = "datetime, id\n"
       data = commits.map { |row| row.join(SEPERATOR) + NEWLINE }.join
       headers + data
     end
