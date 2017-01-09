@@ -1,6 +1,6 @@
 require_relative 'lib/github_repository'
 
-USAGE = 'USAGE: ruby github_commits_frequency_ts.rb <OWNER> <REPO>'.freeze
+USAGE = 'USAGE: ruby github_issue_frequency_ts.rb <OWNER> <REPO>'.freeze
 CREDENTIALS = YAML.load(File.read('config/github_credential.yml'))
 OUTPUT_FOLDER = './output/'.freeze
 
@@ -13,7 +13,7 @@ end
 def valid_arguments_or_die(arguments)
   owner, repo = arguments
   exit_with_error(USAGE) unless owner and repo
-  filename = owner + '_' + repo + '.csv'
+  filename = owner + '_' + repo + '_issues.csv'
   [owner, repo, filename]
 end
 

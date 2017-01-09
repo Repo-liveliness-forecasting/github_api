@@ -13,7 +13,7 @@ end
 def valid_arguments_or_die(arguments)
   owner, repo = arguments
   exit_with_error(USAGE) unless owner and repo
-  filename = owner + '_' + repo + '.csv'
+  filename = owner + '_' + repo + '_commits.csv'
   [owner, repo, filename]
 end
 
